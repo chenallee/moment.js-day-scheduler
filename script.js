@@ -53,7 +53,10 @@ function renderSchedule(){
     var itemHour = toDoItems[i].hour;
     var itemText = toDoItems[i].text; 
     console.log(itemHour + "|" + itemText);
+    $("[data-hour=" + itemHour + "]").children("textarea").val(itemText);
   }
+
+
 
 }
 

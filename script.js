@@ -44,6 +44,16 @@ function initializeTodos(){
 }
 
 function renderSchedule(){
+  toDoItems = localStorage.getItem("todos");
+  toDoItems = JSON.parse(toDoItems);
+
+  //loop thru array then assign the text to the timeBlock with data-hour equal to hour. 
+  //make a variable where [data-hour={hour}] then plug it in to the selector $('[data-hour={hour}')
+  for (var i = 0; i < toDoItems.length; i++){
+    var itemHour = toDoItems[i].hour;
+    var itemText = toDoItems[i].text; 
+    console.log(itemHour + "|" + itemText);
+  }
 
 }
 
@@ -62,14 +72,17 @@ if (event.target.matches("button")){
       toDoItems[j].text = itemToAdd;
     }
   }
+  localStorage.setItem("todos", JSON.stringify(toDoItems));
+  renderSchedule();
 }
-  //renderSchedule();
-  console.log(toDoItems);
+  
+  //console.log(toDoItems);
 }
 
 //add event listener to buttons
 $().ready(function(){
-  initializeTodos();
+  //initializeTodos();
+  renderSchedule();
   $scheduleArea.click(saveHandler);
   
 });

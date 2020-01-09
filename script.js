@@ -8,7 +8,37 @@ var toDoItems = [];
 var currentDate = moment().format("dddd, MMMM Do");
 var currentHour = moment().format("H");
 
+function setUpTimeBlocks(){
+
+    $timeBlocks.each(function () {
+      var $thisBlock = $(this);
+      var thisBlockHr = parseInt($thisBlock.attr("data-hour"));
+
+      //populate the toDoItems array
+      if (!localStorage.getItem("todos")) {
+      var todoObj = {
+        hour: thisBlockHr,
+        //text: "",
+      }
+      toDoItems.push(todoObj);
+      localStorage.setItem("todos", JSON.stringify(toDoItems));
+      }
+
+      //add style to time blocks to show where we are in the day
+      if (thisBlockHr == currentHour) {
+        $thisBlock.addClass("present").removeClass("past future");
+      }
+      if (thisBlockHr < currentHour) {
+        $thisBlock.addClass("past").removeClass("present future");
+      }
+      if (thisBlockHr > currentHour) {
+        $thisBlock.addClass("future").removeClass("past present");
+      }
+    });
+}
+
 function renderSchedule(){
+  //console.log(toDoItems);
   toDoItems = localStorage.getItem("todos");
   toDoItems = JSON.parse(toDoItems);
 
@@ -41,24 +71,11 @@ function saveHandler(){
 
 //add event listener to buttons
 $(document).ready(function(){
+
+  setUpTimeBlocks();
+
   //display current date
   $currentDay.text(currentDate);
-
-  //add style to time blocks to show where we are in the day
-  $timeBlocks.each(function () {
-    var $thisBlock = $(this);
-    var thisBlockHr = parseInt($thisBlock.attr("data-hour"));
-
-    if (thisBlockHr == currentHour) {
-      $thisBlock.addClass("present").removeClass("past future");
-    }
-    if (thisBlockHr < currentHour) {
-      $thisBlock.addClass("past").removeClass("present future");
-    }
-    if (thisBlockHr > currentHour) {
-      $thisBlock.addClass("future").removeClass("past present");
-    }
-  });
 
   renderSchedule();
   $scheduleArea.on("click", "button", saveHandler);

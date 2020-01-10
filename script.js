@@ -8,21 +8,35 @@ var toDoItems = [];
 var currentDate = moment().format("dddd, MMMM Do");
 var currentHour = moment().format("H");
 
-function setUpTimeBlocks(){
+//if we don't have any todos set up, let's set up the array of objects
+function initializeSchedule(){
+//  console.log(toDoItems);
 
-    $timeBlocks.each(function () {
+//for each time block
+  $timeBlocks.each(function(){
+    var $thisBlock = $(this);
+    var thisBlockHr = parseInt($thisBlock.attr("data-hour"));
+
+    var todoObj = {
+      //set related todo hour to same as data-hour
+      hour: thisBlockHr,
+      //get text ready to accept string input
+      text: "",
+    }
+    //add this todo object to todoitems array
+    toDoItems.push(todoObj);
+  });
+
+  //once we have looped thru timeblocks, save this array of objects to local storage by stringifying it first
+  localStorage.setItem("todos", JSON.stringify(toDoItems));
+  //console.log(toDoItems);
+}
+
+//format timeblock colors depending on time
+function setUpTimeBlocks(){
+    $timeBlocks.each(function(){
       var $thisBlock = $(this);
       var thisBlockHr = parseInt($thisBlock.attr("data-hour"));
-
-      //populate the toDoItems array
-      if (!localStorage.getItem("todos")) {
-      var todoObj = {
-        hour: thisBlockHr,
-        //text: "",
-      }
-      toDoItems.push(todoObj);
-      localStorage.setItem("todos", JSON.stringify(toDoItems));
-      }
 
       //add style to time blocks to show where we are in the day
       if (thisBlockHr == currentHour) {
@@ -38,7 +52,7 @@ function setUpTimeBlocks(){
 }
 
 function renderSchedule(){
-  //console.log(toDoItems);
+  
   toDoItems = localStorage.getItem("todos");
   toDoItems = JSON.parse(toDoItems);
 
@@ -50,6 +64,8 @@ function renderSchedule(){
    
     $("[data-hour=" + itemHour + "]").children("textarea").val(itemText);
   }
+
+  console.log(toDoItems);
 }
 
 function saveHandler(){
@@ -69,15 +85,23 @@ function saveHandler(){
   renderSchedule();
 }
 
-//add event listener to buttons
+// when the document loads
 $(document).ready(function(){
 
+  //format the timeblocks depending on time
   setUpTimeBlocks();
+  //if there's nothing for the todos in local storage
+  if(!localStorage.getItem("todos")){
+    //initialize the array of objects
+    initializeSchedule();
+  } //otherwise dont bother bc we get it from local storage
 
   //display current date
   $currentDay.text(currentDate);
 
+  //render schedule from local storage
   renderSchedule();
+  //when a todo item save button is clicked, save it
   $scheduleArea.on("click", "button", saveHandler);
   
 });
